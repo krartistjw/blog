@@ -6,8 +6,8 @@
 - 종료: `docker compose down`
 
 ### 2. Swagger 확인
-`python manage.py collectstatic`
-
+- URL: 127.0.0.1:8000/swagger/
+- 참고: Static 파일이 확인이되지 않는 경우 - `python manage.py collectstatic`
 
 ### 3. API 호출
 - 게시글 생성: POST http://127.0.0.1:8000/board/
