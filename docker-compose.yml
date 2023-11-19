@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  blog:
+    build: .
+    entrypoint: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn blog.wsgi --workers=5 -b 0.0.0.0:8000"
+#    entrypoint: sh -c "python manage.py migrate && gunicorn blog.wsgi --workers=5 -b 0.0.0.0:8000"
+#    command: gunicorn --bind 0.0.0.0:8000 blog.wsgi:application
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/blog
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+#    command: >
+#      sh -c "python manage.py collectstatic --noinput &&
+#             python manage.py migrate &&
+#             gunicorn --bind 0.0.0.0:8000 blog.wsgi:application"
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  nginx:
+#    container_name : nginx
+    image: nginx:1.23.2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - blog
